@@ -1,0 +1,1497 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LAW Study</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f0f4f8; --card:#ffffff; --ink:#0f172a; --ink-soft:#475569; --ink-dim:#94a3b8;
+  --blue:#2563eb; --blue-dark:#1d4ed8; --blue-soft:#dbeafe;
+  --pink:#ec4899; --pink-soft:#fce7f3;
+  --amber:#f59e0b; --amber-soft:#fef3c7;
+  --mint:#10b981; --mint-soft:#d1fae5;
+  --border:#0f172a; --r:22px; --r-sm:14px; --r-lg:30px;
+}
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Outfit',sans-serif}
+html,body{height:100%}
+body{
+  background:var(--bg); color:var(--ink); min-height:100vh; overflow-x:hidden;
+  line-height:1.5; -webkit-font-smoothing:antialiased; position:relative;
+}
+
+/* ==== ANIMATED BLOBS (background hidup) ==== */
+.blob{position:fixed;border-radius:50%;filter:blur(70px);opacity:.55;z-index:0;pointer-events:none;will-change:transform}
+.b1{width:400px;height:400px;background:radial-gradient(circle,#93c5fd,transparent 70%);top:-120px;left:-100px;animation:f1 22s ease-in-out infinite}
+.b2{width:450px;height:450px;background:radial-gradient(circle,#fbcfe8,transparent 70%);bottom:-100px;right:-100px;animation:f2 26s ease-in-out infinite}
+.b3{width:350px;height:350px;background:radial-gradient(circle,#fde68a,transparent 70%);top:40%;left:60%;animation:f3 20s ease-in-out infinite}
+@keyframes f1{0%,100%{transform:translate(0,0)}50%{transform:translate(80px,60px)}}
+@keyframes f2{0%,100%{transform:translate(0,0)}50%{transform:translate(-70px,-60px)}}
+@keyframes f3{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(-50px,40px) scale(1.15)}}
+
+/* Floating particles */
+.particle{position:fixed;width:6px;height:6px;border-radius:50%;background:var(--blue);opacity:.4;pointer-events:none;z-index:1;animation:rise linear infinite}
+@keyframes rise{0%{transform:translateY(100vh) scale(0);opacity:0}10%{opacity:.5}90%{opacity:.5}100%{transform:translateY(-100vh) scale(1);opacity:0}}
+
+/* ==== HEADER ==== */
+header{
+  position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-content:space-between;
+  gap:16px;padding:12px 24px;background:rgba(255,255,255,.75);
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  border-bottom:2px solid var(--border);flex-wrap:wrap;
+}
+.logo-area{display:flex;align-items:center;gap:12px}
+
+/* Mascot dengan mata yang bergerak */
+.mascot{width:56px;height:56px;position:relative;flex-shrink:0;animation:bob 3s ease-in-out infinite}
+@keyframes bob{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-5px) rotate(2deg)}}
+.mascot svg{width:100%;height:100%;display:block;overflow:visible}
+
+.logo-text{display:flex;flex-direction:column;line-height:1}
+.logo-text h1{font-size:21px;font-weight:900;letter-spacing:-.8px;line-height:1.1}
+.logo-text h1 span{color:var(--blue)}
+.logo-text .tag{font-size:9.5px;color:var(--ink-dim);letter-spacing:2px;text-transform:uppercase;font-weight:800;margin-top:3px}
+
+/* Streak + stats */
+.header-right{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.streak{
+  display:flex;align-items:center;gap:6px;padding:8px 14px;background:linear-gradient(135deg,#fff7ed,#fed7aa);
+  border:2px solid var(--border);border-radius:100px;font-weight:900;font-size:13px;
+  box-shadow:0 3px 0 var(--border);transition:transform .15s;
+}
+.streak:hover{transform:translateY(-2px)}
+.streak .flame{font-size:18px;animation:flame 1.5s ease-in-out infinite}
+@keyframes flame{0%,100%{transform:scale(1) rotate(-3deg)}50%{transform:scale(1.15) rotate(3deg)}}
+
+/* XP Ring */
+.xp-ring{position:relative;width:48px;height:48px;flex-shrink:0}
+.xp-ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+.xp-ring circle{fill:none;stroke-width:5;stroke-linecap:round}
+.xp-ring .bg-c{stroke:var(--bg)}
+.xp-ring .fill-c{stroke:url(#ringGrad);transition:stroke-dashoffset .8s cubic-bezier(.34,1.56,.64,1)}
+.xp-ring .lbl{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:900;color:var(--blue)}
+
+.level-chip{
+  display:flex;align-items:center;gap:6px;padding:8px 14px;background:var(--card);
+  border:2px solid var(--border);border-radius:100px;font-weight:900;font-size:12px;
+  box-shadow:0 3px 0 var(--border);
+}
+.level-chip .emoji{font-size:14px}
+
+.clock{display:none;text-align:right;font-size:10px;color:var(--ink-dim);font-weight:700;line-height:1.3}
+.clock strong{display:block;font-family:'JetBrains Mono',monospace;font-size:14px;color:var(--ink);font-weight:800}
+@media(min-width:700px){.clock{display:block}}
+
+/* ==== NAV ==== */
+.nav-wrap{position:sticky;top:82px;z-index:99;background:rgba(255,255,255,.6);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);padding:10px 24px;overflow-x:auto;scrollbar-width:none;border-bottom:2px solid var(--border)}
+.nav-wrap::-webkit-scrollbar{display:none}
+.nav{display:flex;gap:6px;justify-content:center;min-width:fit-content}
+.nav button{
+  background:var(--card);border:2px solid var(--border);color:var(--ink);
+  padding:8px 14px;border-radius:100px;cursor:pointer;font-weight:800;font-size:12px;
+  transition:all .15s;white-space:nowrap;box-shadow:0 3px 0 var(--border);
+  display:flex;align-items:center;gap:5px;
+}
+.nav button:hover{transform:translateY(-2px);box-shadow:0 5px 0 var(--border)}
+.nav button:active{transform:translateY(3px);box-shadow:0 0 0 var(--border)}
+.nav button.active{background:var(--blue);color:#fff}
+.nav .txt{display:none}
+@media(min-width:520px){.nav .txt{display:inline}}
+
+/* ==== CONTAINER ==== */
+.container{position:relative;z-index:5;max-width:820px;margin:26px auto;padding:0 20px 80px}
+.tab{display:none;animation:pop .4s cubic-bezier(.34,1.56,.64,1)}
+.tab.on{display:block}
+@keyframes pop{from{opacity:0;transform:scale(.96) translateY(8px)}to{opacity:1;transform:scale(1) translateY(0)}}
+
+/* ==== CARD ==== */
+.card{
+  background:var(--card);border:2.5px solid var(--border);border-radius:var(--r-lg);
+  padding:24px;margin-bottom:18px;box-shadow:0 5px 0 var(--border);
+  transition:transform .2s;position:relative;
+}
+.card:hover{transform:translateY(-2px)}
+
+.card-head{display:flex;align-items:center;gap:12px;margin-bottom:18px;padding-bottom:14px;border-bottom:2px dashed var(--bg)}
+.card-icon{
+  width:44px;height:44px;border-radius:14px;display:flex;align-items:center;justify-content:center;
+  font-size:22px;flex-shrink:0;border:2.5px solid var(--border);box-shadow:0 3px 0 var(--border);
+}
+.i-blue{background:var(--blue-soft)}
+.i-pink{background:var(--pink-soft)}
+.i-amber{background:var(--amber-soft)}
+.i-mint{background:var(--mint-soft)}
+.card-head h2{font-size:19px;font-weight:900;letter-spacing:-.5px;line-height:1.15}
+.card-head h2 small{display:block;font-size:11.5px;color:var(--ink-soft);font-weight:700;margin-top:2px}
+
+/* ==== HERO (dashboard) ==== */
+.hero{text-align:center;padding:8px 0}
+.hero-mascot{width:120px;height:120px;margin:0 auto 12px;animation:bob 4s ease-in-out infinite}
+.hero-mascot svg{width:100%;height:100%}
+.hero-greet{font-size:22px;font-weight:900;letter-spacing:-.6px;margin-bottom:4px}
+.hero-greet span{color:var(--blue)}
+.hero-sub{font-size:13px;color:var(--ink-soft);font-weight:700;margin-bottom:18px}
+.hero-quote{
+  padding:14px 18px;background:var(--blue-soft);border:2px solid var(--border);
+  border-radius:var(--r);font-size:14px;font-weight:800;font-style:italic;
+  line-height:1.5;letter-spacing:-.2px;color:var(--ink);
+}
+
+/* ==== DAILY MISSIONS ==== */
+.missions{display:grid;grid-template-columns:1fr;gap:8px}
+.mission{
+  display:flex;align-items:center;gap:12px;padding:12px 14px;
+  background:var(--bg);border:2px solid var(--border);border-radius:var(--r-sm);
+  transition:all .2s;cursor:pointer;
+}
+.mission:hover{transform:translateX(3px)}
+.mission.done{background:var(--mint-soft)}
+.mission-check{
+  width:28px;height:28px;border-radius:50%;border:2.5px solid var(--border);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  font-size:14px;font-weight:900;background:var(--card);transition:all .25s;
+}
+.mission.done .mission-check{background:var(--mint);color:#fff;transform:scale(1.1)}
+.mission-body{flex:1}
+.mission-title{font-size:13px;font-weight:900;letter-spacing:-.2px}
+.mission-desc{font-size:11px;color:var(--ink-soft);font-weight:700;margin-top:2px}
+.mission-reward{font-size:11px;font-weight:900;color:var(--blue);background:var(--blue-soft);padding:3px 8px;border-radius:100px;flex-shrink:0}
+
+/* ==== STATS ==== */
+.stat-line{
+  display:flex;justify-content:space-between;align-items:center;padding:14px 12px;
+  background:var(--bg);border:2px solid var(--border);border-radius:var(--r-sm);
+  margin-bottom:8px;font-size:13px;font-weight:800;transition:transform .2s;
+}
+.stat-line:hover{transform:translateX(3px)}
+.stat-line:last-child{margin-bottom:0}
+.stat-line .lbl{display:flex;align-items:center;gap:10px}
+.stat-line .ico{
+  width:34px;height:34px;display:flex;align-items:center;justify-content:center;
+  background:var(--amber-soft);border:2px solid var(--border);border-radius:10px;font-size:16px;
+}
+.stat-line strong{font-size:22px;font-family:'JetBrains Mono',monospace;font-weight:800;letter-spacing:-1px}
+
+/* ==== TIMER ==== */
+.timer-modes{display:flex;justify-content:center;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+.timer-modes button{
+  background:var(--card);border:2.5px solid var(--border);color:var(--ink);
+  padding:8px 16px;border-radius:100px;cursor:pointer;font-weight:800;font-size:12px;
+  transition:all .15s;box-shadow:0 3px 0 var(--border);display:flex;align-items:center;gap:5px;
+}
+.timer-modes button:hover{transform:translateY(-2px);box-shadow:0 5px 0 var(--border)}
+.timer-modes button:active{transform:translateY(3px);box-shadow:0 0 0 var(--border)}
+.timer-modes button.on{background:var(--blue);color:#fff}
+
+.timer-display{
+  font-family:'JetBrains Mono',monospace;font-size:80px;font-weight:800;
+  text-align:center;letter-spacing:-5px;line-height:1;margin:14px 0;
+  background:linear-gradient(180deg,var(--blue),var(--pink));
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+  transition:transform .3s;
+}
+.timer-display.tick{transform:scale(1.03)}
+.timer-btns{display:flex;justify-content:center;gap:8px;flex-wrap:wrap}
+
+/* ==== BUTTONS ==== */
+.btn{
+  border:2.5px solid var(--border);padding:11px 22px;border-radius:var(--r-sm);
+  cursor:pointer;font-weight:900;font-size:13px;transition:all .12s;
+  box-shadow:0 4px 0 var(--border);display:inline-flex;align-items:center;gap:6px;
+  justify-content:center;font-family:inherit;
+}
+.btn:hover{transform:translateY(-2px);box-shadow:0 6px 0 var(--border)}
+.btn:active{transform:translateY(4px);box-shadow:0 0 0 var(--border)}
+.btn-primary{background:var(--blue);color:#fff}
+.btn-pink{background:var(--pink);color:#fff}
+.btn-ghost{background:var(--card);color:var(--ink)}
+
+/* ==== INPUT ==== */
+.input-group{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+input,select,textarea{
+  padding:11px 14px;border:2.5px solid var(--border);border-radius:var(--r-sm);
+  background:var(--card);color:var(--ink);outline:none;font-family:inherit;
+  font-size:13.5px;font-weight:700;transition:all .15s;box-shadow:0 3px 0 var(--border);
+}
+input:focus,select:focus,textarea:focus{box-shadow:0 3px 0 var(--blue);border-color:var(--blue)}
+input::placeholder,textarea::placeholder{color:var(--ink-dim);font-weight:600}
+#task-input,#taskInput{flex:1;min-width:160px}
+
+/* ==== LIST ==== */
+ul{list-style:none}
+li{
+  display:flex;justify-content:space-between;align-items:center;padding:13px 15px;
+  background:var(--card);border:2px solid var(--border);border-radius:var(--r-sm);
+  margin-bottom:8px;font-size:13.5px;font-weight:800;
+  box-shadow:0 3px 0 var(--border);transition:all .15s;gap:10px;
+  animation:itemIn .3s ease;
+}
+@keyframes itemIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
+li:hover{transform:translateX(3px)}
+li.done{background:var(--bg);text-decoration:line-through;text-decoration-thickness:2px;text-decoration-color:var(--ink-dim);opacity:.55}
+li .del{
+  background:var(--card);border:2px solid var(--border);color:var(--pink);
+  cursor:pointer;font-size:12px;padding:4px 9px;border-radius:8px;
+  font-weight:900;transition:all .15s;flex-shrink:0;
+}
+li .del:hover{background:var(--pink);color:#fff}
+
+/* ==== CALC ==== */
+.calc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:8px}
+.calc-grid input{text-align:center;font-family:'JetBrains Mono',monospace;font-weight:800}
+.result-box{
+  margin-top:18px;padding:22px;background:var(--blue-soft);border:2.5px solid var(--border);
+  border-radius:var(--r);text-align:center;font-size:11px;font-weight:900;
+  letter-spacing:2px;text-transform:uppercase;color:var(--ink-soft);
+  box-shadow:0 4px 0 var(--border);
+}
+.result-box #avg{
+  display:block;font-family:'JetBrains Mono',monospace;font-size:48px;font-weight:800;
+  color:var(--blue);letter-spacing:-3px;line-height:1;margin:8px 0;
+}
+.result-box #grade{font-size:30px;font-weight:900;font-family:'JetBrains Mono',monospace}
+
+/* ==== COUNTDOWN ==== */
+.countdown{
+  text-align:center;padding:30px 18px;background:var(--amber-soft);
+  border:2.5px solid var(--border);border-radius:var(--r);box-shadow:0 4px 0 var(--border);
+}
+.countdown #exam-title,.countdown #examTitle{display:block;font-size:11px;font-weight:900;letter-spacing:3px;text-transform:uppercase;margin-bottom:14px}
+.countdown #countdown-numbers,.countdown #countdownNumbers{font-family:'JetBrains Mono',monospace;font-size:32px;font-weight:800;letter-spacing:-2px;line-height:1.1}
+
+/* ==== NOTES ==== */
+.note-form{display:flex;flex-direction:column;gap:10px}
+textarea{width:100%;height:90px;resize:vertical;line-height:1.55;font-weight:700}
+.note{
+  background:#fffdf5;padding:14px 40px 14px 20px;border:2px solid var(--border);
+  border-radius:var(--r-sm);margin-bottom:10px;position:relative;font-size:13.5px;
+  line-height:1.55;font-weight:700;box-shadow:0 3px 0 var(--border);transition:transform .15s;
+}
+.note::before{content:'';position:absolute;left:0;top:0;bottom:0;width:5px;background:var(--amber);border-radius:var(--r-sm) 0 0 var(--r-sm);border-right:2px solid var(--border)}
+.note:hover{transform:translateX(3px)}
+.note .del{position:absolute;top:10px;right:10px;background:var(--card);border:2px solid var(--border);color:var(--pink);cursor:pointer;font-size:11px;padding:3px 7px;border-radius:7px;font-weight:900}
+.note .del:hover{background:var(--pink);color:#fff}
+
+/* ==== EMPTY ==== */
+.empty{text-align:center;padding:24px 12px;color:var(--ink-dim);font-size:13px;font-weight:700;font-style:italic}
+.empty::before{content:'✨';display:block;font-size:30px;margin-bottom:6px;opacity:.7}
+
+/* ==== TOAST ==== */
+.toast-wrap{position:fixed;top:20px;right:20px;z-index:9999;display:flex;flex-direction:column;gap:10px;pointer-events:none}
+.toast{
+  background:var(--card);border:2.5px solid var(--border);border-radius:var(--r);
+  padding:12px 16px;box-shadow:0 6px 0 var(--border);display:flex;align-items:center;
+  gap:12px;min-width:250px;max-width:320px;pointer-events:auto;
+  animation:tIn .5s cubic-bezier(.34,1.56,.64,1);
+}
+.toast.out{animation:tOut .35s ease forwards}
+@keyframes tIn{from{opacity:0;transform:translateX(120%) scale(.9)}to{opacity:1;transform:translateX(0) scale(1)}}
+@keyframes tOut{from{opacity:1;transform:translateX(0)}to{opacity:0;transform:translateX(120%)}}
+.toast-ico{width:42px;height:42px;background:var(--amber);border:2px solid var(--border);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;box-shadow:0 3px 0 var(--border)}
+.toast-body{flex:1}
+.toast-title{font-size:13px;font-weight:900;letter-spacing:-.2px;line-height:1.2}
+.toast-desc{font-size:11px;font-weight:700;color:var(--ink-soft);margin-top:2px;line-height:1.3}
+
+/* ==== CONFETTI ==== */
+.confetti{position:fixed;width:9px;height:9px;border:1.5px solid var(--border);pointer-events:none;z-index:9998;border-radius:2px}
+@keyframes cFall{to{transform:translate(var(--tx),var(--ty)) rotate(var(--rot));opacity:0}}
+
+/* ==== SCROLLBAR ==== */
+::-webkit-scrollbar{width:10px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--blue);border:2px solid var(--bg);border-radius:10px}
+
+/* ==== RESPONSIVE ==== */
+@media(max-width:640px){
+  header{padding:10px 14px;gap:8px}
+  .mascot{width:44px;height:44px}
+  .logo-text h1{font-size:17px}
+  .logo-text .tag{font-size:8px;letter-spacing:1.2px}
+  .streak{padding:6px 10px;font-size:11px}
+  .streak .flame{font-size:14px}
+  .xp-ring{width:40px;height:40px}
+  .xp-ring .lbl{font-size:9px}
+  .level-chip{padding:6px 10px;font-size:10px}
+  .nav-wrap{top:70px;padding:8px 14px}
+  .nav button{padding:7px 11px;font-size:11px}
+  .timer-display{font-size:58px;letter-spacing:-3px}
+  .container{margin-top:16px;padding:0 14px 60px}
+  .card{padding:20px 16px;border-radius:var(--r)}
+  .card-head h2{font-size:17px}
+  .hero-mascot{width:90px;height:90px}
+  .hero-greet{font-size:18px}
+  .hero-quote{font-size:13px;padding:12px 14px}
+  #countdown-numbers,#countdownNumbers{font-size:22px!important}
+  .result-box #avg{font-size:38px}
+  .toast-wrap{top:12px;right:12px;left:12px}
+  .toast{min-width:auto;max-width:100%}
+  .user-chip{padding:6px 10px;font-size:11px}
+}
+
+/* ==== AUTH / USER ACCOUNT ==== */
+.user-chip{
+  display:flex;align-items:center;gap:6px;padding:8px 14px;background:var(--card);
+  border:2px solid var(--border);border-radius:100px;font-weight:900;font-size:12px;
+  box-shadow:0 3px 0 var(--border);cursor:pointer;transition:all .15s;
+}
+.user-chip:hover{transform:translateY(-2px);box-shadow:0 5px 0 var(--border)}
+.user-chip:active{transform:translateY(2px);box-shadow:0 0 0 var(--border)}
+.user-chip.logged{background:var(--mint-soft)}
+.user-chip .u-avatar{font-size:14px}
+
+.modal-backdrop{
+  position:fixed;inset:0;background:rgba(15,23,42,.65);
+  backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
+  z-index:99999;display:none;align-items:center;justify-content:center;
+  padding:16px;animation:fadeIn .2s ease;
+}
+.modal-backdrop.on{display:flex}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+
+.modal-card{
+  background:var(--card);border:2.5px solid var(--border);border-radius:var(--r-lg);
+  width:100%;max-width:440px;padding:26px;box-shadow:0 8px 0 var(--border);
+  position:relative;animation:pop .3s cubic-bezier(.34,1.56,.64,1);
+  max-height:92vh;overflow-y:auto;
+}
+.modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;padding-bottom:12px;border-bottom:2px dashed var(--bg)}
+.modal-head h3{font-size:20px;font-weight:900;letter-spacing:-.5px;line-height:1.2}
+.modal-close{
+  background:var(--card);border:2px solid var(--border);border-radius:50%;
+  width:32px;height:32px;display:flex;align-items:center;justify-content:center;
+  font-weight:900;cursor:pointer;box-shadow:0 2px 0 var(--border);transition:all .15s;flex-shrink:0;
+}
+.modal-close:hover{background:var(--pink);color:#fff;transform:scale(1.05)}
+
+.auth-tabs{display:flex;gap:6px;margin-bottom:18px;background:var(--bg);padding:4px;border:2px solid var(--border);border-radius:100px}
+.auth-tab-btn{
+  flex:1;background:transparent;border:none;padding:8px 10px;border-radius:100px;
+  font-weight:800;font-size:12px;cursor:pointer;transition:all .15s;color:var(--ink-soft);
+}
+.auth-tab-btn.active{background:var(--card);color:var(--ink);box-shadow:0 2px 0 var(--border);border:1.5px solid var(--border)}
+
+.auth-input-group{margin-bottom:14px;text-align:left}
+.auth-input-group label{display:block;font-size:12px;font-weight:800;margin-bottom:5px;color:var(--ink-soft)}
+.auth-input-group input{width:100%}
+
+.auth-status{
+  padding:10px 14px;border-radius:var(--r-sm);font-size:12px;font-weight:800;
+  margin-bottom:14px;display:none;border:2px solid var(--border);line-height:1.4;
+}
+.auth-status.err{background:var(--pink-soft);color:#be185d;border-color:#be185d;display:block}
+.auth-status.succ{background:var(--mint-soft);color:#065f46;border-color:#065f46;display:block}
+.auth-status.info{background:var(--blue-soft);color:#1e40af;border-color:#1e40af;display:block}
+
+.profile-card{text-align:center;padding:12px 0}
+.profile-avatar{width:70px;height:70px;margin:0 auto 10px;background:var(--blue-soft);border:2.5px solid var(--border);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:36px;box-shadow:0 4px 0 var(--border)}
+.profile-box{
+  background:var(--bg);border:2px solid var(--border);border-radius:var(--r-sm);
+  padding:14px;margin:14px 0;display:flex;justify-content:space-between;align-items:center;
+}
+</style>
+</head>
+<body>
+
+<!-- Background life -->
+<div class="blob b1"></div>
+<div class="blob b2"></div>
+<div class="blob b3"></div>
+
+<div class="toast-wrap" id="toastWrap"></div>
+
+<!-- AUTH MODAL -->
+<div class="modal-backdrop" id="authModal" onclick="closeAuthModal(event)">
+  <div class="modal-card" onclick="event.stopPropagation()">
+    <div class="modal-head">
+      <div style="display:flex;align-items:center;gap:10px">
+        <span style="font-size:24px">🔐</span>
+        <div>
+          <h3 id="modalTitle">Akun LAW Study</h3>
+          <small style="color:var(--ink-soft);font-weight:700">Cloudflare D1 (SQLite Database)</small>
+        </div>
+      </div>
+      <button class="modal-close" onclick="closeAuthModal()" title="Tutup">✕</button>
+    </div>
+
+    <!-- Alert status -->
+    <div class="auth-status" id="authStatus"></div>
+
+    <!-- VIEW 1: UNAUTHENTICATED (LOGIN / REGISTER / API CONFIG) -->
+    <div id="unauthView">
+      <div class="auth-tabs">
+        <button class="auth-tab-btn active" id="tabBtnLogin" onclick="switchAuthTab('login')">Masuk</button>
+        <button class="auth-tab-btn" id="tabBtnReg" onclick="switchAuthTab('reg')">Daftar</button>
+        <button class="auth-tab-btn" id="tabBtnApi" onclick="switchAuthTab('api')">⚡ Cloudflare D1</button>
+      </div>
+
+      <!-- FORM LOGIN -->
+      <form id="formLogin" onsubmit="handleLogin(event)">
+        <div class="auth-input-group">
+          <label for="loginEmail">Email / Username</label>
+          <input type="text" id="loginEmail" placeholder="nama@email.com" required autocomplete="username">
+        </div>
+        <div class="auth-input-group">
+          <label for="loginPass">Password</label>
+          <input type="password" id="loginPass" placeholder="••••••••" required autocomplete="current-password">
+        </div>
+        <button type="submit" class="btn btn-primary" id="loginSubmitBtn" style="width:100%;margin-top:6px">
+          🚀 Masuk Sekarang
+        </button>
+      </form>
+
+      <!-- FORM REGISTER -->
+      <form id="formRegister" onsubmit="handleRegister(event)" style="display:none">
+        <div class="auth-input-group">
+          <label for="regName">Nama Lengkap / Panggilan</label>
+          <input type="text" id="regName" placeholder="Contoh: Alwi Zaqqi" required autocomplete="name">
+        </div>
+        <div class="auth-input-group">
+          <label for="regEmail">Email</label>
+          <input type="email" id="regEmail" placeholder="nama@email.com" required autocomplete="email">
+        </div>
+        <div class="auth-input-group">
+          <label for="regPass">Password (min. 6 karakter)</label>
+          <input type="password" id="regPass" placeholder="••••••••" minlength="6" required autocomplete="new-password">
+        </div>
+        <div class="auth-input-group">
+          <label for="regPassConfirm">Konfirmasi Password</label>
+          <input type="password" id="regPassConfirm" placeholder="••••••••" minlength="6" required autocomplete="new-password">
+        </div>
+        <button type="submit" class="btn btn-pink" id="regSubmitBtn" style="width:100%;margin-top:6px">
+          ✨ Buat Akun Baru
+        </button>
+      </form>
+
+      <!-- CONFIG CLOUDFLARE D1 SQLITE API -->
+      <div id="viewApiConfig" style="display:none">
+        <div style="font-size:12.5px;color:var(--ink-soft);font-weight:700;margin-bottom:12px;line-height:1.5">
+          Backend serverless berjalan di <strong>Cloudflare Pages Functions</strong> dengan database <strong>SQLite (Cloudflare D1)</strong>.
+        </div>
+        <div class="auth-input-group">
+          <label for="apiUrlInput">API Base URL</label>
+          <input type="text" id="apiUrlInput" placeholder="/api" value="/api">
+        </div>
+        <div style="display:flex;gap:8px;margin-top:10px">
+          <button type="button" class="btn btn-primary" style="flex:1" onclick="saveApiUrl()">💾 Simpan Base URL</button>
+          <button type="button" class="btn btn-ghost" onclick="testApiConnection()">⚡ Cek Status D1</button>
+        </div>
+        <div id="d1StatusInfo" style="margin-top:14px;padding:12px;background:var(--bg);border:2px dashed var(--border);border-radius:var(--r-sm);font-size:11.5px;color:var(--ink-soft);font-weight:700;line-height:1.5">
+          💡 Secara default menggunakan <code>/api</code> (same-origin). Jika di-hosting di Cloudflare Pages, autentikasi langsung terhubung tanpa konfigurasi manual!
+        </div>
+      </div>
+    </div>
+
+    <!-- VIEW 2: AUTHENTICATED (PROFILE & LOGOUT) -->
+    <div id="authProfileView" style="display:none">
+      <div class="profile-card">
+        <div class="profile-avatar">🎓</div>
+        <h4 id="profileName" style="font-size:18px;font-weight:900">-</h4>
+        <div id="profileEmail" style="font-size:12px;color:var(--ink-soft);font-weight:700">-</div>
+      </div>
+      <div class="profile-box">
+        <div>
+          <div style="font-size:11px;color:var(--ink-soft);font-weight:800;text-transform:uppercase">Poin Cloud</div>
+          <strong id="profilePoints" style="font-size:22px;color:var(--blue);font-family:'JetBrains Mono',monospace">0</strong>
+        </div>
+        <button class="btn btn-primary" style="padding:8px 14px;font-size:11.5px" onclick="syncUserPoints()" id="syncBtn">
+          🔄 Sinkronkan
+        </button>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:12px">
+        <button class="btn btn-ghost" style="flex:1" onclick="switchAuthTab('api'); document.getElementById('unauthView').style.display='block'; document.getElementById('authProfileView').style.display='none';">⚙️ API URL</button>
+        <button class="btn btn-pink" style="flex:1" onclick="handleLogout()">🚪 Keluar</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<header>
+  <div class="logo-area">
+    <div class="mascot" id="mascot">
+      <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+        <rect x="9" y="15" width="46" height="40" rx="8" fill="#2563eb" stroke="#0f172a" stroke-width="2.5"/>
+        <rect x="9" y="15" width="11" height="40" rx="8" fill="#1d4ed8" stroke="#0f172a" stroke-width="2.5"/>
+        <rect x="17" y="20" width="33" height="30" rx="5" fill="#f0f4f8" stroke="#0f172a" stroke-width="2.5"/>
+        <circle id="eyeL" cx="27" cy="32" r="3.2" fill="#0f172a"/>
+        <circle id="eyeR" cx="40" cy="32" r="3.2" fill="#0f172a"/>
+        <circle cx="28" cy="30.8" r="1" fill="#fff"/>
+        <circle cx="41" cy="30.8" r="1" fill="#fff"/>
+        <circle cx="23" cy="37" r="1.8" fill="#ec4899" opacity=".55"/>
+        <circle cx="44" cy="37" r="1.8" fill="#ec4899" opacity=".55"/>
+        <path d="M27 39 Q33.5 44 40 39" stroke="#0f172a" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+        <rect x="38" y="15" width="5" height="13" fill="#f59e0b" stroke="#0f172a" stroke-width="2.5" rx="1"/>
+      </svg>
+    </div>
+    <div class="logo-text">
+      <h1>LAW<span>Study</span></h1>
+      <span class="tag">Study Companion</span>
+    </div>
+  </div>
+  <div class="header-right">
+    <div class="streak" id="streakChip" title="Streak harian">
+      <span class="flame">🔥</span><span id="streakNum">0</span>
+    </div>
+    <div class="xp-ring" title="Progress ke level berikutnya">
+      <svg viewBox="0 0 48 48">
+        <defs>
+          <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#2563eb"/>
+            <stop offset="100%" stop-color="#ec4899"/>
+          </linearGradient>
+        </defs>
+        <circle class="bg-c" cx="24" cy="24" r="20"/>
+        <circle class="fill-c" id="ringFill" cx="24" cy="24" r="20"
+          stroke-dasharray="125.6" stroke-dashoffset="125.6"/>
+      </svg>
+      <div class="lbl" id="ringPct">0%</div>
+    </div>
+    <div class="level-chip">
+      <span class="emoji" id="lvlEmoji">🌱</span><span id="lvlName">Murid Baru</span>
+    </div>
+    <div class="user-chip" id="userChip" onclick="openAuthModal()" title="Akun Pengguna">
+      <span class="u-avatar" id="userAvatar">👤</span><span id="userLabel">Masuk</span>
+    </div>
+    <div class="clock">
+      <strong id="jam">00:00:00</strong>
+      <span id="tanggal">—</span>
+    </div>
+  </div>
+</header>
+
+<div class="nav-wrap">
+  <div class="nav">
+    <button class="on" onclick="showTab('dash')">🏠<span class="txt">Beranda</span></button>
+    <button onclick="showTab('timer')">⏱️<span class="txt">Timer</span></button>
+    <button onclick="showTab('todo')">📝<span class="txt">Tugas</span></button>
+    <button onclick="showTab('calc')">🧮<span class="txt">Nilai</span></button>
+    <button onclick="showTab('sched')">📅<span class="txt">Jadwal</span></button>
+    <button onclick="showTab('exam')">⏳<span class="txt">Ujian</span></button>
+    <button onclick="showTab('notes')">💡<span class="txt">Catatan</span></button>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- DASHBOARD -->
+  <div id="dash" class="tab on">
+    <div class="card">
+      <div class="hero">
+        <div class="hero-mascot">
+          <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+            <rect x="9" y="15" width="46" height="40" rx="8" fill="#2563eb" stroke="#0f172a" stroke-width="2.5"/>
+            <rect x="9" y="15" width="11" height="40" rx="8" fill="#1d4ed8" stroke="#0f172a" stroke-width="2.5"/>
+            <rect x="17" y="20" width="33" height="30" rx="5" fill="#f0f4f8" stroke="#0f172a" stroke-width="2.5"/>
+            <circle cx="27" cy="32" r="3.2" fill="#0f172a"/>
+            <circle cx="40" cy="32" r="3.2" fill="#0f172a"/>
+            <circle cx="28" cy="30.8" r="1" fill="#fff"/>
+            <circle cx="41" cy="30.8" r="1" fill="#fff"/>
+            <circle cx="23" cy="37" r="1.8" fill="#ec4899" opacity=".55"/>
+            <circle cx="44" cy="37" r="1.8" fill="#ec4899" opacity=".55"/>
+            <path d="M27 39 Q33.5 44 40 39" stroke="#0f172a" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+            <rect x="38" y="15" width="5" height="13" fill="#f59e0b" stroke="#0f172a" stroke-width="2.5" rx="1"/>
+          </svg>
+        </div>
+        <div class="hero-greet" id="greeting">Hai, semangat! 👋</div>
+        <div class="hero-sub" id="dateToday">—</div>
+        <div class="hero-quote" id="quote">"Study now, Flex later."</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head">
+        <div class="card-icon i-amber">🎯</div>
+        <h2>Misi Hari Ini<small id="missionProgress">0/3 selesai</small></h2>
+      </div>
+      <div class="missions" id="missions"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-head">
+        <div class="card-icon i-pink">📊</div>
+        <h2>Progress Belajarmu<small>Rekap sejauh ini</small></h2>
+      </div>
+      <div class="stat-line"><span class="lbl"><span class="ico">✅</span>Tugas Selesai</span><strong id="stDone">0</strong></div>
+      <div class="stat-line"><span class="lbl"><span class="ico">⏱️</span>Menit Fokus</span><strong id="stFocus">0</strong></div>
+      <div class="stat-line"><span class="lbl"><span class="ico">⭐</span>Total Poin</span><strong id="stPoints">0</strong></div>
+    </div>
+  </div>
+
+  <!-- TIMER -->
+  <div id="timer" class="tab">
+    <div class="card">
+      <div class="card-head">
+        <div class="card-icon i-blue">⏱️</div>
+        <h2>Pomodoro Timer<small>Fokus 25 menit, istirahat 5 menit</small></h2>
+      </div>
+      <div class="timer-modes">
+        <button id="m25" class="on" onclick="setMode(25)">🎯 Fokus 25</button>
+        <button id="m5" onclick="setMode(5)">☕ Istirahat 5</button>
+      </div>
+      <div class="timer-display" id="tDisp">25:00</div>
+      <div class="timer-btns">
+        <button class="btn btn-primary" onclick="startTimer()">▶ Mulai</button>
+        <button class="btn btn-ghost" onclick="pauseTimer()">⏸ Jeda</button>
+        <button class="btn btn-ghost" onclick="resetTimer()">↺ Ulang</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TODO -->
+  <div id="todo" class="tab">
+    <div class="card">
+      <div class="card-head">
+        <div class="card-icon i-pink">📝</div>
+        <h2>Daftar Tugas<small>+5 poin & confetti per tugas</small></h2>
+      </div>
+      <div class="input-group">
+        <input type="text" id="taskInput" placeholder="Contoh: Soal MTK halaman 42">
+        <select id="subjSel">
+          <option>Matematika</option><option>B. Indonesia</option><option>B. Inggris</option>
+          <option>IPA</option><option>IPS</option><option>Lainnya</option>
+        </select>
+        <button class="btn btn-pink" onclick="addTask()">+ Tambah</button>
+      </div>
+      <ul id="taskList"></ul>
+    </div>
+  </div>
+
+  <!-- CALC -->
+  <div id="calc" class="tab">
+    <div class="card">
+      <div class="card-head">
+        <div class="card-icon i-mint">🧮</div>
+        <h2>Kalkulator Nilai<small>Isi nilai yang kamu punya saja</small></h2>
+      </div>
+      <div class="calc-grid">
+        <input type="number" id="n1" placeholder="01" min="0" max="100">
+        <input type="number" id="n2" placeholder="02" min="0" max="100">
+        <input type="number" id="n3" placeholder="03" min="0" max="100">
+        <input type="number" id="n4" placeholder="04" min="0" max="100">
+        <input type="number" id="n5" placeholder="05" min="0" max="100">
+        <input type="number" id="n6" placeholder="06" min="0" max="100">
+        <input type="number" id="n7" placeholder="07" min="0" max="100">
+        <input type="number" id="n8" placeholder="08" min="0" max="100">
+        <input type="number" id="n9" placeholder="09" min="0" max="100">
+        <input type="number" id="n10" placeholder="10" min="0" max="100">
+        <input type="number" id="n11" placeholder="11" min="0" max="100">
+        <input type="number" id="n12" placeholder="12" min="0" max="100">
+        <input type="number" id="n13" placeholder="13" min="0" max="100">
+        <input type="number" id="n14" placeholder="14" min="0" max="100">
+        <input type="number" id="n15" placeholder="15" min="0" max="100">
+        <input type="number" id="n16" placeholder="16" min="0" max="100">
+      </div>
+      <div style="margin-top:16px">
+        <button class="btn btn-primary" style="width:100%" onclick="calcAvg()">🎯 Hitung Rata-rata</button>
+      </div>
+      <div class="result-box">Rata-rata<strong id="avg">0</strong>Grade: <span id="grade">—</span></div>
+    </div>
+  </div>
+
+  <!-- SCHEDULE -->
+  <div id="sched" class="tab">
+    <div class="card">
+      <div class="card-head">
+        <div class="card-icon i-blue">📅</div>
+        <h2>Jadwal Pelajaran<small>Otomatis urut per hari</small></h2>
+      </div>
+      <div class="input-group">
+        <select id="daySel">
+          <option>Senin</option><option>Selasa</option><option>Rabu</option>
+          <option>Kamis</option><option>Jumat</option><option>Sabtu</option>
+        </select>
+        <input type="text" id="subjInput" placeholder="Nama mata pelajaran" style="flex:1;min-width:160px">
+        <button class="btn btn-pink" onclick="addSched()">+ Tambah</button>
+      </div>
+      <ul id="schedList"></ul>
+    </div>
+  </div>
+
+  <!-- EXAM -->
+  <div id="exam" class="tab">
+    <div class="card">
+      <div class="card-head">
+        <div class="card-icon i-pink">⏳</div>
+        <h2>Countdown Ujian<small>Hitung mundur ke hari H</small></h2>
+      </div>
+      <div class="input-group">
+        <input type="date" id="examDate" style="flex:1">
+        <button class="btn btn-pink" onclick="setExam()">🚀 Mulai</button>
+      </div>
+      <div class="countdown">
+        <span id="examTitle">Belum Ada Ujian</span>
+        <div id="countdownNumbers">—</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- NOTES -->
+  <div id="notes" class="tab">
+    <div class="card">
+      <div class="card-head">
+        <div class="card-icon i-amber">💡</div>
+        <h2>Catatan Cepat<small>+2 poin per catatan</small></h2>
+      </div>
+      <div class="note-form">
+        <textarea id="noteInput" placeholder="Tulis ide, rumus, atau hal penting..."></textarea>
+        <button class="btn btn-primary" onclick="saveNote()">💾 Simpan Catatan</button>
+      </div>
+      <div id="notesList" style="margin-top:16px"></div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ============ CLOCK ============
+function tick(){
+  const n=new Date();
+  jam.innerText=n.toLocaleTimeString('id-ID',{hour12:false});
+  tanggal.innerText=n.toLocaleDateString('id-ID',{weekday:'short',day:'numeric',month:'short'});
+}
+setInterval(tick,1000);tick();
+
+// ============ NAV ============
+const TABS=['dash','timer','todo','calc','sched','exam','notes'];
+function showTab(id){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
+  document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('on'));
+  document.getElementById(id).classList.add('on');
+  const i=TABS.indexOf(id);
+  if(i>=0)document.querySelectorAll('.nav button')[i].classList.add('on');
+  window.scrollTo({top:0,behavior:'smooth'});
+  playClick();
+}
+
+// ============ QUOTES ============
+const QUOTES=[
+  "Study now, Flex later.","It's you vs you.","Improving 1% is better than 0.",
+  "Your effort counts.","Cintailah prosesnya, hasil akan mengikuti.",
+  "Konsisten > motivasi.","The expert in anything was once a beginner.",
+  "Kamu nggak harus hebat untuk mulai, tapi kamu harus mulai untuk jadi hebat.",
+  "Belajar hari ini, menang besok.","Fokus, progress, repeat."
+];
+function rotateQuote(){quote.innerText='“'+QUOTES[Math.floor(Math.random()*QUOTES.length)]+'”';}
+setInterval(rotateQuote,60000);rotateQuote();
+
+// Greeting berdasarkan waktu
+function updateGreeting(){
+  const h=new Date().getHours();
+  let g="Hai, semangat! 👋";
+  if(h<11)g="Selamat pagi! ☀️";
+  else if(h<15)g="Selamat siang! 🌤️";
+  else if(h<19)g="Selamat sore! 🌇";
+  else g="Selamat malam! 🌙";
+  greeting.innerText=g;
+  dateToday.innerText=new Date().toLocaleDateString('id-ID',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+}
+updateGreeting();
+
+// ============ SOUND (Web Audio, no file) ============
+let audioCtx=null;
+function playClick(){
+  try{
+    if(!audioCtx)audioCtx=new (window.AudioContext||window.webkitAudioContext)();
+    const o=audioCtx.createOscillator(),g=audioCtx.createGain();
+    o.connect(g);g.connect(audioCtx.destination);
+    o.type='sine';o.frequency.setValueAtTime(600,audioCtx.currentTime);
+    o.frequency.exponentialRampToValueAtTime(900,audioCtx.currentTime+.08);
+    g.gain.setValueAtTime(.08,audioCtx.currentTime);
+    g.gain.exponentialRampToValueAtTime(.001,audioCtx.currentTime+.12);
+    o.start();o.stop(audioCtx.currentTime+.15);
+  }catch(e){}
+}
+function playSuccess(){
+  try{
+    if(!audioCtx)audioCtx=new (window.AudioContext||window.webkitAudioContext)();
+    [523.25,659.25,783.99].forEach((f,i)=>{
+      const o=audioCtx.createOscillator(),g=audioCtx.createGain();
+      o.connect(g);g.connect(audioCtx.destination);
+      o.type='sine';o.frequency.value=f;
+      const t=audioCtx.currentTime+i*.08;
+      g.gain.setValueAtTime(0,t);
+      g.gain.linearRampToValueAtTime(.1,t+.02);
+      g.gain.exponentialRampToValueAtTime(.001,t+.25);
+      o.start(t);o.stop(t+.3);
+    });
+  }catch(e){}
+}
+function playAlarm(){
+  try{
+    if(!audioCtx)audioCtx=new (window.AudioContext||window.webkitAudioContext)();
+    [880,660,880].forEach((f,i)=>{
+      const o=audioCtx.createOscillator(),g=audioCtx.createGain();
+      o.connect(g);g.connect(audioCtx.destination);
+      o.type='sine';o.frequency.value=f;
+      const t=audioCtx.currentTime+i*.2;
+      g.gain.setValueAtTime(.35,t);
+      g.gain.exponentialRampToValueAtTime(.01,t+.18);
+      o.start(t);o.stop(t+.2);
+    });
+  }catch(e){}
+}
+
+// ============ TIMER ============
+let timeLeft=25*60,timerId=null,running=false,mode=25;
+let totalFocus=parseInt(localStorage.getItem('lawFocusMin'))||0;
+
+function updTimerUI(){
+  const m=Math.floor(timeLeft/60),s=timeLeft%60;
+  tDisp.innerText=`${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+}
+function setMode(min){
+  pauseTimer();mode=min;timeLeft=min*60;updTimerUI();
+  m25.classList.toggle('on',min===25);
+  m5.classList.toggle('on',min===5);
+  playClick();
+}
+function startTimer(){
+  if(running)return;
+  requestNotif();
+  running=true;playClick();
+  timerId=setInterval(()=>{
+    if(timeLeft>0){
+      timeLeft--;updTimerUI();
+      tDisp.classList.add('tick');
+      setTimeout(()=>tDisp.classList.remove('tick'),150);
+    }else{
+      pauseTimer();playAlarm();
+      if(mode===25){
+        addPoints(10);
+        totalFocus+=25;localStorage.setItem('lawFocusMin',totalFocus);updateStats();
+        showToast('🎉','Sesi fokus selesai!','Kamu dapat 10 poin. Istirahat dulu ya.');
+        sendNotif('Sesi Fokus Selesai!','+10 poin. Istirahat 5 menit ya.');
+        markMission('focus');
+        timeLeft=5*60;mode=5;
+      }else{
+        showToast('⏰','Istirahat selesai!','Waktunya fokus lagi. Semangat!');
+        sendNotif('Istirahat Selesai!','Ayo lanjut fokus.');
+        timeLeft=25*60;mode=25;
+      }
+      updTimerUI();
+      m25.classList.toggle('on',mode===25);
+      m5.classList.toggle('on',mode===5);
+    }
+  },1000);
+}
+function pauseTimer(){clearInterval(timerId);running=false}
+function resetTimer(){pauseTimer();timeLeft=mode*60;updTimerUI();playClick()}
+
+// ============ TASKS ============
+function loadTasks(){
+  const ts=JSON.parse(localStorage.getItem('lawTasks'))||[];
+  taskList.innerHTML='';
+  if(!ts.length){taskList.innerHTML='<div class="empty">Belum ada tugas. Mulai dengan yang kecil dulu.</div>';}
+  else{
+    ts.forEach((t,i)=>{
+      const li=document.createElement('li');
+      if(t.done)li.classList.add('done');
+      li.innerHTML=`<span onclick="toggleTask(${i},event)" style="cursor:pointer;flex:1">${esc(t.text)} <span style="color:var(--ink-dim);font-size:11px;font-weight:800">· ${esc(t.subject)}</span></span><button class="del" onclick="delTask(${i})">✕</button>`;
+      taskList.appendChild(li);
+    });
+  }
+  updateStats();
+}
+function addTask(){
+  const txt=taskInput.value.trim(),sub=subjSel.value;
+  if(!txt)return;
+  const ts=JSON.parse(localStorage.getItem('lawTasks'))||[];
+  ts.push({text:txt,subject:sub,done:false});
+  localStorage.setItem('lawTasks',JSON.stringify(ts));
+  taskInput.value='';loadTasks();playClick();
+}
+function toggleTask(i,ev){
+  const ts=JSON.parse(localStorage.getItem('lawTasks'));
+  const was=ts[i].done;ts[i].done=!was;
+  localStorage.setItem('lawTasks',JSON.stringify(ts));
+  if(!was&&ts[i].done){
+    addPoints(5);playSuccess();
+    if(ev)spawnConfetti(ev.clientX,ev.clientY);
+    markMission('task');
+  }
+  loadTasks();
+}
+function delTask(i){
+  const ts=JSON.parse(localStorage.getItem('lawTasks'));
+  ts.splice(i,1);localStorage.setItem('lawTasks',JSON.stringify(ts));
+  loadTasks();playClick();
+}
+function updateStats(){
+  const ts=JSON.parse(localStorage.getItem('lawTasks'))||[];
+  stDone.innerText=ts.filter(t=>t.done).length;
+  stFocus.innerText=totalFocus;
+  stPoints.innerText=localStorage.getItem('lawPoints')||0;
+}
+
+// ============ CALC ============
+function calcAvg(){
+  let tot=0,c=0;
+  for(let i=1;i<=16;i++){
+    const v=parseFloat(document.getElementById('n'+i).value);
+    if(!isNaN(v)){tot+=v;c++}
+  }
+  const avg=c>0?tot/c:0;
+  document.getElementById('avg').innerText=avg.toFixed(2);
+  let g='E',col='#ec4899';
+  if(avg>=90){g='A';col='#10b981'}
+  else if(avg>=80){g='B';col='#2563eb'}
+  else if(avg>=70){g='C';col='#f59e0b'}
+  else if(avg>=60){g='D';col='#ec4899'}
+  const el=document.getElementById('grade');
+  el.innerText=g;el.style.color=col;playClick();
+}
+
+// ============ SCHEDULE ============
+const dayOrd={Senin:1,Selasa:2,Rabu:3,Kamis:4,Jumat:5,Sabtu:6,Minggu:7};
+function loadSched(){
+  const s=JSON.parse(localStorage.getItem('lawSchedule'))||[];
+  s.sort((a,b)=>(dayOrd[a.day]||99)-(dayOrd[b.day]||99));
+  schedList.innerHTML='';
+  if(!s.length){schedList.innerHTML='<div class="empty">Jadwal masih kosong.</div>';}
+  else{
+    s.forEach((it,i)=>{
+      const li=document.createElement('li');
+      li.innerHTML=`<span><strong style="color:var(--blue);font-weight:900">${esc(it.day)}</strong> &nbsp;·&nbsp; ${esc(it.subject)}</span><button class="del" onclick="delSched(${i})">✕</button>`;
+      schedList.appendChild(li);
+    });
+  }
+}
+function addSched(){
+  const d=daySel.value,s=subjInput.value.trim();
+  if(!s)return;
+  const arr=JSON.parse(localStorage.getItem('lawSchedule'))||[];
+  arr.push({day:d,subject:s});
+  localStorage.setItem('lawSchedule',JSON.stringify(arr));
+  subjInput.value='';loadSched();playClick();
+}
+function delSched(i){
+  const arr=JSON.parse(localStorage.getItem('lawSchedule'));
+  arr.splice(i,1);localStorage.setItem('lawSchedule',JSON.stringify(arr));
+  loadSched();playClick();
+}
+
+// ============ EXAM ============
+let examInt=null,examN=false;
+function setExam(){
+  const d=examDate.value;if(!d)return;
+  localStorage.setItem('lawExamDate',d);
+  examTitle.innerText='🎯 Menuju Ujian';
+  examN=false;
+  if(examInt)clearInterval(examInt);
+  examInt=setInterval(updCountdown,1000);
+  updCountdown();playClick();
+}
+function updCountdown(){
+  const d=localStorage.getItem('lawExamDate');if(!d)return;
+  const diff=new Date(d+'T00:00:00')-new Date();
+  if(diff<0){
+    countdownNumbers.innerText='Ujian telah berlalu 🎓';
+    clearInterval(examInt);
+    if(!examN){
+      playAlarm();
+      showToast('🎓','Waktu ujian tiba!','Semangat, buktikan kerja kerasmu!');
+      sendNotif('Waktu Ujian!','Semangat, buktikan kerja kerasmu! 💪');
+      examN=true;
+    }
+    return;
+  }
+  const dd=Math.floor(diff/86400000),hh=Math.floor(diff%86400000/3600000),
+    mm=Math.floor(diff%3600000/60000),ss=Math.floor(diff%60000/1000);
+  countdownNumbers.innerText=`${dd}h ${hh}j ${mm}m ${ss}s`;
+}
+
+// ============ NOTES ============
+function loadNotes(){
+  const n=JSON.parse(localStorage.getItem('lawNotes'))||[];
+  notesList.innerHTML='';
+  if(!n.length){notesList.innerHTML='<div class="empty">Belum ada catatan.</div>';}
+  else{
+    n.forEach((note,i)=>{
+      const d=document.createElement('div');
+      d.className='note';
+      d.innerHTML=`<p style="white-space:pre-wrap;padding-right:20px">${esc(note)}</p><button class="del" onclick="delNote(${i})">✕</button>`;
+      notesList.appendChild(d);
+    });
+  }
+}
+function saveNote(){
+  const v=noteInput.value.trim();if(!v)return;
+  const n=JSON.parse(localStorage.getItem('lawNotes'))||[];
+  n.unshift(v);localStorage.setItem('lawNotes',JSON.stringify(n));
+  noteInput.value='';addPoints(2);loadNotes();playSuccess();
+  markMission('note');
+  spawnConfetti(window.innerWidth/2,window.innerHeight/2);
+}
+function delNote(i){
+  const n=JSON.parse(localStorage.getItem('lawNotes'));
+  n.splice(i,1);localStorage.setItem('lawNotes',JSON.stringify(n));
+  loadNotes();playClick();
+}
+
+// ============ POIN, LEVEL, XP RING ============
+const LEVELS=[
+  {min:1500,name:"Master Belajar",emoji:"👑"},
+  {min:800,name:"Murid Hebat",emoji:"🏆"},
+  {min:400,name:"Murid Pintar",emoji:"🎓"},
+  {min:150,name:"Murid Rajin",emoji:"🌟"},
+  {min:0,name:"Murid Baru",emoji:"🌱"}
+];
+let lastLvlIdx=-1;
+
+function addPoints(n){
+  let p=(parseInt(localStorage.getItem('lawPoints'))||0)+n;
+  localStorage.setItem('lawPoints',p);
+  stPoints.innerText=p;
+  if(typeof points!=='undefined'&&points)points.innerText=p;
+  const pp=document.getElementById('profilePoints');
+  if(pp)pp.innerText=p;
+  updLevel(p);
+}
+function updLevel(p){
+  const idx=LEVELS.findIndex(l=>p>=l.min);
+  const lv=LEVELS[idx];
+  lvlName.innerText=lv.name;lvlEmoji.innerText=lv.emoji;
+  
+  let pct=100;
+  if(idx>0){
+    const next=LEVELS[idx-1];
+    const range=next.min-lv.min;
+    const inR=p-lv.min;
+    pct=Math.min(100,Math.max(0,(inR/range)*100));
+  }
+  ringFill.setAttribute('stroke-dashoffset',125.6-(125.6*pct/100));
+  ringPct.innerText=Math.round(pct)+'%';
+  
+  if(lastLvlIdx!==-1&&idx<lastLvlIdx){
+    showToast(lv.emoji,`Naik level: ${lv.name}!`,`Kamu sudah kumpulkan ${p} poin. Keren!`);
+    playSuccess();
+    spawnConfetti(window.innerWidth-60,80);
+  }
+  lastLvlIdx=idx;
+}
+
+// ============ STREAK ============
+function checkStreak(){
+  const today=new Date().toDateString();
+  const last=localStorage.getItem('lawStreakDate');
+  let streak=parseInt(localStorage.getItem('lawStreak'))||0;
+  
+  if(last!==today){
+    const yesterday=new Date();
+    yesterday.setDate(yesterday.getDate()-1);
+    if(last===yesterday.toDateString()){
+      streak++;
+    }else if(last!==today){
+      streak=1;
+    }
+    localStorage.setItem('lawStreak',streak);
+    localStorage.setItem('lawStreakDate',today);
+  }
+  streakNum.innerText=streak;
+}
+
+// ============ DAILY MISSIONS ============
+const MISSIONS=[
+  {id:'task',title:'Selesaikan 1 tugas',desc:'Centang tugas di tab Tugas',reward:'+5'}
+];
+function loadMissions(){
+  const today=new Date().toDateString();
+  const saved=JSON.parse(localStorage.getItem('lawMissions')||'{}');
+  if(saved.date!==today){
+    localStorage.setItem('lawMissions',JSON.stringify({date:today,task:false,focus:false,note:false}));
+  }
+  renderMissions();
+}
+function renderMissions(){
+  const m=JSON.parse(localStorage.getItem('lawMissions'))||{task:false,focus:false,note:false};
+  const list=[
+    {id:'task',emoji:'📝',title:'Selesaikan 1 tugas',desc:'Centang di tab Tugas',reward:'+5',done:m.task},
+    {id:'focus',emoji:'⏱️',title:'Fokus 25 menit',desc:'Selesaikan 1 sesi timer',reward:'+10',done:m.focus},
+    {id:'note',emoji:'💡',title:'Tulis 1 catatan',desc:'Simpan di tab Catatan',reward:'+2',done:m.note}
+  ];
+  missions.innerHTML='';
+  let done=0;
+  list.forEach(x=>{
+    if(x.done)done++;
+    const div=document.createElement('div');
+    div.className='mission'+(x.done?' done':'');
+    div.innerHTML=`
+      <div class="mission-check">${x.done?'✓':'○'}</div>
+      <div class="mission-body">
+        <div class="mission-title">${x.emoji} ${x.title}</div>
+        <div class="mission-desc">${x.desc}</div>
+      </div>
+      <div class="mission-reward">${x.reward}</div>
+    `;
+    missions.appendChild(div);
+  });
+  missionProgress.innerText=`${done}/3 selesai`;
+}
+function markMission(id){
+  const m=JSON.parse(localStorage.getItem('lawMissions'))||{};
+  if(!m[id]){
+    m[id]=true;
+    localStorage.setItem('lawMissions',JSON.stringify(m));
+    renderMissions();
+  }
+}
+
+// ============ TOAST ============
+function showToast(emoji,title,desc){
+  const t=document.createElement('div');
+  t.className='toast';
+  t.innerHTML=`<div class="toast-ico">${emoji}</div><div class="toast-body"><div class="toast-title">${title}</div><div class="toast-desc">${desc}</div></div>`;
+  toastWrap.appendChild(t);
+  setTimeout(()=>{
+    t.classList.add('out');
+    setTimeout(()=>t.remove(),350);
+  },3600);
+}
+
+// ============ CONFETTI ============
+function spawnConfetti(x,y){
+  const cols=['#2563eb','#f59e0b','#ec4899','#10b981','#fbbf24'];
+  for(let i=0;i<16;i++){
+    const c=document.createElement('div');
+    c.className='confetti';
+    c.style.left=x+'px';c.style.top=y+'px';
+    c.style.background=cols[Math.floor(Math.random()*cols.length)];
+    const ang=Math.random()*Math.PI*2,dist=70+Math.random()*110;
+    c.style.setProperty('--tx',Math.cos(ang)*dist+'px');
+    c.style.setProperty('--ty',Math.sin(ang)*dist+80+'px');
+    c.style.setProperty('--rot',(Math.random()*720-360)+'deg');
+    c.style.animation='cFall .95s ease-out forwards';
+    document.body.appendChild(c);
+    setTimeout(()=>c.remove(),1000);
+  }
+}
+
+// ============ NOTIF ============
+function requestNotif(){
+  if(!('Notification' in window))return;
+  if(Notification.permission==='default')Notification.requestPermission();
+}
+function sendNotif(title,body){
+  if(!('Notification' in window))return;
+  if(Notification.permission==='granted')new Notification(title,{body});
+}
+
+// ============ UTIL ============
+function esc(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML}
+
+// ============ PARTICLES (background hidup) ============
+function spawnParticle(){
+  const p=document.createElement('div');
+  p.className='particle';
+  const colors=['#2563eb','#ec4899','#f59e0b','#10b981'];
+  p.style.background=colors[Math.floor(Math.random()*colors.length)];
+  p.style.left=Math.random()*100+'vw';
+  p.style.width=p.style.height=(3+Math.random()*5)+'px';
+  const dur=10+Math.random()*15;
+  p.style.animationDuration=dur+'s';
+  document.body.appendChild(p);
+  setTimeout(()=>p.remove(),dur*1000);
+}
+setInterval(spawnParticle,900);
+
+// ============ MASCOT FOLLOW CURSOR (eyes) ============
+document.addEventListener('mousemove',e=>{
+  const m=document.getElementById('mascot');
+  if(!m)return;
+  const r=m.getBoundingClientRect();
+  const cx=r.left+r.width/2,cy=r.top+r.height/2;
+  const dx=(e.clientX-cx)/60,dy=(e.clientY-cy)/60;
+  const ex=Math.max(-2,Math.min(2,dx));
+  const ey=Math.max(-2,Math.min(2,dy));
+  ['eyeL','eyeR'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el){el.setAttribute('cx',(id==='eyeL'?27:40)+ex);el.setAttribute('cy',32+ey)}
+  });
+});
+
+// ============ AUTHENTICATION (GOOGLE SPREADSHEET API) ============
+let authTab = 'login';
+
+function getLoggedUser(){
+  try{
+    return JSON.parse(localStorage.getItem('lawUser'))||null;
+  }catch(e){return null;}
+}
+
+function getApiBase(){
+  const custom = (localStorage.getItem('lawApiBase') || '').trim();
+  if (custom) return custom.replace(/\/+$/, '');
+  return '/api'; // Default same-origin Cloudflare Pages
+}
+
+function initAuth(){
+  const base = localStorage.getItem('lawApiBase') || '/api';
+  const inputEl = document.getElementById('apiUrlInput');
+  if(inputEl) inputEl.value = base;
+  updateUserUI();
+}
+
+function updateUserUI(){
+  const user = getLoggedUser();
+  const chip = document.getElementById('userChip');
+  const label = document.getElementById('userLabel');
+  const avatar = document.getElementById('userAvatar');
+  
+  if(user){
+    if(chip) chip.classList.add('logged');
+    if(label) label.innerText = user.name ? user.name.split(' ')[0] : 'Profil';
+    if(avatar) avatar.innerText = '🎓';
+  } else {
+    if(chip) chip.classList.remove('logged');
+    if(label) label.innerText = 'Masuk';
+    if(avatar) avatar.innerText = '👤';
+  }
+}
+
+function openAuthModal(){
+  const user = getLoggedUser();
+  const modal = document.getElementById('authModal');
+  const unauthView = document.getElementById('unauthView');
+  const profileView = document.getElementById('authProfileView');
+  setAuthStatus('none');
+
+  if(user){
+    if(unauthView) unauthView.style.display = 'none';
+    if(profileView) profileView.style.display = 'block';
+    document.getElementById('profileName').innerText = user.name || 'Pengguna';
+    document.getElementById('profileEmail').innerText = user.email || '-';
+    document.getElementById('profilePoints').innerText = localStorage.getItem('lawPoints') || (user.points || 0);
+  } else {
+    if(unauthView) unauthView.style.display = 'block';
+    if(profileView) profileView.style.display = 'none';
+    switchAuthTab('login');
+  }
+
+  const inputEl = document.getElementById('apiUrlInput');
+  if(inputEl) inputEl.value = localStorage.getItem('lawApiBase') || '/api';
+
+  if(modal) modal.classList.add('on');
+  playClick();
+}
+
+function closeAuthModal(e){
+  if(e && e.target && e.target.id !== 'authModal' && !e.target.classList.contains('modal-close')) return;
+  const modal = document.getElementById('authModal');
+  if(modal) modal.classList.remove('on');
+  playClick();
+}
+
+function switchAuthTab(tab){
+  authTab = tab;
+  setAuthStatus('none');
+  const btnLogin = document.getElementById('tabBtnLogin');
+  const btnReg = document.getElementById('tabBtnReg');
+  const btnApi = document.getElementById('tabBtnApi');
+  const fLogin = document.getElementById('formLogin');
+  const fReg = document.getElementById('formRegister');
+  const vApi = document.getElementById('viewApiConfig');
+
+  if(btnLogin) btnLogin.classList.toggle('active', tab === 'login');
+  if(btnReg) btnReg.classList.toggle('active', tab === 'reg');
+  if(btnApi) btnApi.classList.toggle('active', tab === 'api');
+
+  if(fLogin) fLogin.style.display = (tab === 'login') ? 'block' : 'none';
+  if(fReg) fReg.style.display = (tab === 'reg') ? 'block' : 'none';
+  if(vApi) vApi.style.display = (tab === 'api') ? 'block' : 'none';
+  playClick();
+}
+
+function setAuthStatus(type, msg){
+  const el = document.getElementById('authStatus');
+  if(!el) return;
+  el.className = 'auth-status';
+  if(type === 'none' || !msg){
+    el.style.display = 'none';
+    el.innerText = '';
+  } else {
+    el.classList.add(type);
+    el.innerText = msg;
+    el.style.display = 'block';
+  }
+}
+
+function saveApiUrl(){
+  const val = (document.getElementById('apiUrlInput').value || '').trim() || '/api';
+  localStorage.setItem('lawApiBase', val);
+  setAuthStatus('succ', '✅ API Base URL disimpan: ' + val);
+  playSuccess();
+}
+
+async function testApiConnection(){
+  const base = getApiBase();
+  setAuthStatus('info', '⏳ Menguji koneksi ke backend Cloudflare (' + base + '/health)...');
+  try {
+    const res = await fetch(base + '/health');
+    const data = await res.json();
+    if(data.status === 'ok'){
+      const info = `🎉 Terhubung ke Cloudflare! Database: ${data.database || 'SQLite D1'} (Status: ${data.dbStatus || 'Connected'}, Total Users: ${data.totalUsers || 0})`;
+      setAuthStatus('succ', info);
+      const box = document.getElementById('d1StatusInfo');
+      if(box) box.innerHTML = `✅ <strong>Status Cloudflare D1:</strong> Aktif & terhubung (${data.totalUsers || 0} akun terdaftar).`;
+      playSuccess();
+    } else {
+      setAuthStatus('err', '❌ ' + (data.message || 'Gagal merespons status.'));
+    }
+  } catch(err) {
+    setAuthStatus('err', '❌ Gagal menghubungi ' + base + '/health (' + err.message + '). Jika dibuka lokal via file://, jalankan "wrangler pages dev ." atau deploy ke Cloudflare Pages!');
+  }
+}
+
+async function handleLogin(e){
+  e.preventDefault();
+  const base = getApiBase();
+  const email = (document.getElementById('loginEmail').value || '').trim();
+  const pass = (document.getElementById('loginPass').value || '').trim();
+  const btn = document.getElementById('loginSubmitBtn');
+
+  if(!email || !pass){
+    setAuthStatus('err', '⚠️ Email dan password wajib diisi!');
+    return;
+  }
+
+  setAuthStatus('info', '⏳ Sedang memeriksa akun ke database SQLite (D1)...');
+  if(btn) { btn.disabled = true; btn.innerText = 'Memeriksa...'; }
+
+  try {
+    const res = await fetch(base + '/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: email, password: pass })
+    });
+    const data = await res.json();
+
+    if(res.ok && data.success && data.user){
+      localStorage.setItem('lawUser', JSON.stringify(data.user));
+      if(data.user.points !== undefined){
+        const cloudPts = parseInt(data.user.points) || 0;
+        const localPts = parseInt(localStorage.getItem('lawPoints')) || 0;
+        const finalPts = Math.max(cloudPts, localPts);
+        localStorage.setItem('lawPoints', finalPts);
+        addPoints(0);
+      }
+      setAuthStatus('succ', '🎉 ' + (data.message || 'Login berhasil!'));
+      updateUserUI();
+      playSuccess();
+      showToast('👋', 'Selamat Datang!', 'Berhasil masuk sebagai ' + (data.user.name || email));
+      spawnConfetti(window.innerWidth / 2, window.innerHeight / 2);
+      setTimeout(()=>{ closeAuthModal(); }, 900);
+    } else {
+      setAuthStatus('err', '❌ ' + (data.message || 'Email atau password salah!'));
+    }
+  } catch(err){
+    setAuthStatus('err', '❌ Gagal terhubung ke server (' + err.message + '). Pastikan backend Cloudflare aktif!');
+  } finally {
+    if(btn) { btn.disabled = false; btn.innerText = '🚀 Masuk Sekarang'; }
+  }
+}
+
+async function handleRegister(e){
+  e.preventDefault();
+  const base = getApiBase();
+  const name = (document.getElementById('regName').value || '').trim();
+  const email = (document.getElementById('regEmail').value || '').trim();
+  const pass = (document.getElementById('regPass').value || '').trim();
+  const confirm = (document.getElementById('regPassConfirm').value || '').trim();
+  const btn = document.getElementById('regSubmitBtn');
+
+  if(pass !== confirm){
+    setAuthStatus('err', '⚠️ Konfirmasi password tidak cocok!');
+    return;
+  }
+
+  setAuthStatus('info', '⏳ Menyimpan akun baru ke SQLite Cloudflare D1...');
+  if(btn) { btn.disabled = true; btn.innerText = 'Mendaftarkan...'; }
+
+  const currentPoints = parseInt(localStorage.getItem('lawPoints')) || 0;
+
+  try {
+    const res = await fetch(base + '/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        name: name,
+        email: email,
+        password: pass,
+        points: currentPoints
+      })
+    });
+    const data = await res.json();
+
+    if(res.ok && data.success && data.user){
+      localStorage.setItem('lawUser', JSON.stringify(data.user));
+      setAuthStatus('succ', '🎉 ' + (data.message || 'Akun berhasil dibuat!'));
+      updateUserUI();
+      playSuccess();
+      showToast('🌟', 'Akun Terdaftar!', 'Selamat bergabung di LAW Study, ' + name);
+      spawnConfetti(window.innerWidth / 2, window.innerHeight / 2);
+      setTimeout(()=>{ closeAuthModal(); }, 1000);
+    } else {
+      setAuthStatus('err', '❌ ' + (data.message || 'Gagal mendaftarkan akun.'));
+    }
+  } catch(err){
+    setAuthStatus('err', '❌ Gagal mendaftarkan akun (' + err.message + ').');
+  } finally {
+    if(btn) { btn.disabled = false; btn.innerText = '✨ Buat Akun Baru'; }
+  }
+}
+
+function handleLogout(){
+  localStorage.removeItem('lawUser');
+  updateUserUI();
+  playClick();
+  showToast('👋', 'Sampai Jumpa!', 'Kamu telah keluar dari akun.');
+  closeAuthModal();
+}
+
+async function syncUserPoints(){
+  const user = getLoggedUser();
+  const base = getApiBase();
+  const btn = document.getElementById('syncBtn');
+  if(!user) return;
+
+  const pts = parseInt(localStorage.getItem('lawPoints')) || 0;
+  if(btn) { btn.disabled = true; btn.innerText = '⏳ Menyimpan...'; }
+
+  try {
+    const res = await fetch(base + '/sync', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: user.email, points: pts })
+    });
+    const data = await res.json();
+    if(res.ok && data.success){
+      showToast('☁️', 'Tersimpan di D1 SQLite!', 'Poin Anda (' + pts + ') berhasil disinkronkan.');
+      document.getElementById('profilePoints').innerText = pts;
+      user.points = pts;
+      localStorage.setItem('lawUser', JSON.stringify(user));
+      playSuccess();
+    } else {
+      showToast('⚠️', 'Gagal Sinkronisasi', data.message || 'Silakan coba lagi.');
+    }
+  } catch(err){
+    showToast('❌', 'Error', 'Gagal menghubungi server backend.');
+  } finally {
+    if(btn) { btn.disabled = false; btn.innerText = '🔄 Sinkronkan'; }
+  }
+}
+
+// ============ INIT ============
+loadTasks();updTimerUI();
+loadSched();loadNotes();
+addPoints(0);
+checkStreak();loadMissions();
+initAuth();
+
+const sd=localStorage.getItem('lawExamDate');
+if(sd){examDate.value=sd;setExam()}
+</script>
+</body>
+</html>

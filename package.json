@@ -1,0 +1,22 @@
+{
+  "name": "lawstudy",
+  "version": "1.0.0",
+  "description": "LAW Study Companion - Fullstack Cloudflare Pages with SQLite (Cloudflare D1)",
+  "main": "index.html",
+  "scripts": {
+    "dev": "wrangler pages dev .",
+    "deploy": "wrangler pages deploy ."
+  },
+  "keywords": [
+    "cloudflare-pages",
+    "d1",
+    "sqlite",
+    "productivity",
+    "pomodoro"
+  ],
+  "author": "Alwi Latjengke",
+  "license": "MIT",
+  "devDependencies": {
+    "wrangler": "^3.50.0"
+  }
+}
