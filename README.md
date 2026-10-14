@@ -111,3 +111,4 @@ npm install
 npx wrangler pages dev . --d1 DB=lawstudy-db
 ```
 Akses di browser melalui: `http://localhost:8788`.
+
