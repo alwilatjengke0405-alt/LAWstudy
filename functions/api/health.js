@@ -38,3 +38,4 @@ export async function onRequestGet(context) {
     { status: 200, headers: corsHeaders }
   );
 }
+

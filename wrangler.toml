@@ -10,4 +10,5 @@ pages_build_output_dir = "."
 [[d1_databases]]
 binding = "DB"
 database_name = "lawstudy-db"
-database_id = "YOUR_D1_DATABASE_ID_HERE"
+database_id = "5031e67c-88b1-42fe-a98d-1593632f56a6"
+
